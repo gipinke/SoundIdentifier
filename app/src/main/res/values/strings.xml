@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FinalProject</string>
+    <string name="accept">Aceitar</string>
+    <string name="permission_header">Habilite o Microfone</string>
+    <string name="permissions_text">Para identificar os sons ao seu redor, é preciso permitir o uso do microfone</string>
+    <string name="settings_icon">settings_icon</string>
+    <string name="recording_description">Tentando identificar algum áudio ao seu redor</string>
+</resources>
