@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
     private val permissionRequestCode = 0
+    private val TAG = "PermissionsScreen"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,15 +32,8 @@ class MainActivity : AppCompatActivity() {
         // Declare variables
         var permissionsCalled = 0
 
-        // Check Permissions
-        val recordAudioPermissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-        val writeExternalStoragePermissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-
-        if (recordAudioPermissionStatus == PackageManager.PERMISSION_GRANTED &&
-            writeExternalStoragePermissionStatus == PackageManager.PERMISSION_GRANTED) {
-            Log.d("FinalProjectDebugLog", "Permissões aceitas, redirecionar para tela de gravação de áudio")
-            redirectToRecorderActivity()
-        }
+        // Check if user has permission permissions
+        checkPermissions()
 
         // Declare buttons listeners
         val acceptButton = findViewById<Button>(R.id.accept_button)
@@ -54,14 +48,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        Log.d(TAG, "OnResume foi chamado")
+        checkPermissions()
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == permissionRequestCode) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.d("FinalProjectDebugLog", "Permissões aceitas, redirecionar para tela de gravação de áudio")
+                Log.d(TAG, "Permissões aceitas, redirecionar para tela de gravação de áudio")
                 redirectToRecorderActivity()
             } else {
-                Log.d("FinalProjectDebugLog", "Permissões negadas")
+                Log.d(TAG, "Permissões negadas")
             }
         }
     }
@@ -81,10 +82,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun redirectToAppPermissionsScreen() {
-        Log.d("FinalProjectDebugLog", "Vá aos ajustes do aplicativo para aceitar as permissões")
+        Log.d(TAG, "Vá aos ajustes do aplicativo para aceitar as permissões")
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         val uri: Uri = Uri.fromParts("package", packageName, null)
         intent.data = uri
         startActivity(intent)
+    }
+
+    private fun checkPermissions() {
+        val recordAudioPermissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+        val writeExternalStoragePermissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+        Log.d(TAG, "Verificar se usuário tem as permissões aceitas")
+
+        if (recordAudioPermissionStatus == PackageManager.PERMISSION_GRANTED &&
+                writeExternalStoragePermissionStatus == PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Permissões aceitas, redirecionar para tela de gravação de áudio")
+            redirectToRecorderActivity()
+        }
     }
 }
