@@ -1,4 +1,4 @@
-package com.example.finalproject
+package com.tcc.soundidentifier
 
 import android.content.Intent
 import android.media.AudioFormat
@@ -9,8 +9,11 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
@@ -40,6 +43,7 @@ class RecorderActivity: AppCompatActivity() {
         // Declare variables
         val vibrationConfig = this.getSystemService(VIBRATOR_SERVICE) as Vibrator
 
+        // Start Recording
         startRecording()
 
         // Declare buttons listeners
@@ -47,10 +51,28 @@ class RecorderActivity: AppCompatActivity() {
         settingButton.setOnClickListener {
             onSettingPressed(vibrationConfig)
         }
+
+        // Start Firebase Messaging
+        startFirebaseMessaging()
     }
 
     override fun onBackPressed() {
         // do nothing
+    }
+
+    private fun startFirebaseMessaging() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.d(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+
+            // Log and toast
+            Log.d(TAG, "Token: $token")
+        })
     }
 
     private fun onSettingPressed(vibrationConfig: Vibrator) {

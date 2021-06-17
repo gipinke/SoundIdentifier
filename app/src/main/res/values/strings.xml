@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FinalProject</string>
+    <string name="app_name">SoundIdentifier</string>
     <string name="accept">Aceitar</string>
     <string name="permission_header">Habilite o Microfone</string>
     <string name="permissions_text">Para identificar os sons ao seu redor, é preciso permitir o uso do microfone</string>

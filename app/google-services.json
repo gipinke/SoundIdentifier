@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "629176163933",
+    "project_id": "soundidentifier",
+    "storage_bucket": "soundidentifier.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:629176163933:android:0a6a122965c7d3544df7b4",
+        "android_client_info": {
+          "package_name": "com.tcc.soundidentifier"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "629176163933-qr33c9ul10b3g9st3155sbm4fvh0h0tu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tcc.soundidentifier",
+            "certificate_hash": "6d84325c9ea1345a43983023b4223f64ad256623"
+          }
+        },
+        {
+          "client_id": "629176163933-15g41e7micg3tvv2tsr3087on2uuneo8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAADMQgXawPkh-Kywz8JA5RZMGkP5RooQQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "629176163933-15g41e7micg3tvv2tsr3087on2uuneo8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
