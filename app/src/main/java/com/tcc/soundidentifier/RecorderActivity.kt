@@ -1,10 +1,12 @@
 package com.tcc.soundidentifier
 
+import android.content.Context
 import android.content.Intent
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Bundle
+import android.os.PowerManager
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
@@ -18,12 +20,12 @@ import java.io.IOException
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
+import java.net.Socket
 
 class RecorderActivity: AppCompatActivity() {
     private val TAG = "RecorderScreen"
-    private var recordingState = false
 
-    private val port = 50005
+    private val port = 5001
     private val sampleRate = 16000 // 44100 for music
 
     private val channelConfig = AudioFormat.CHANNEL_IN_MONO
@@ -39,6 +41,13 @@ class RecorderActivity: AppCompatActivity() {
         // Hide actionBar
         val actionbar: ActionBar? = supportActionBar
         actionbar!!.hide()
+
+        // Active WakeLock for recorder when screen is blocked
+        //        (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
+        //            newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyWakelockTag").apply {
+        //                acquire()
+        //            }
+        //        }
 
         // Declare variables
         val vibrationConfig = this.getSystemService(VIBRATOR_SERVICE) as Vibrator
@@ -93,7 +102,7 @@ class RecorderActivity: AppCompatActivity() {
                 Log.d(TAG, "Buffer created of size $minBufSize")
                 var packet: DatagramPacket
 
-                val destination = InetAddress.getByName("192.168.0.16");
+                val destination = InetAddress.getByName("192.168.0.12");
                 Log.d(TAG, "Address retrieved");
 
                 recorder = AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, channelConfig, audioFormat, minBufSize * 10)
@@ -101,9 +110,7 @@ class RecorderActivity: AppCompatActivity() {
 
                 recorder!!.startRecording()
 
-                recordingState = true
-
-                while (recordingState) {
+                while (true) {
                     //reading data from MIC into buffer
                     minBufSize = recorder!!.read(buffer, 0, buffer.size)
 
