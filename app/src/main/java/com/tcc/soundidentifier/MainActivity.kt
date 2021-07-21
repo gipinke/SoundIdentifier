@@ -48,13 +48,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        Log.d(TAG, "OnResume foi chamado")
-        checkPermissions()
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == permissionRequestCode) {
@@ -77,8 +70,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun redirectToRecorderActivity() {
+        Log.d(TAG, "Trocando de Tela")
         val intent = Intent(this, RecorderActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     private fun redirectToAppPermissionsScreen() {

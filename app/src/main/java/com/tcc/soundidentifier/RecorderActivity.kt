@@ -1,38 +1,41 @@
 package com.tcc.soundidentifier
 
-import android.content.Context
 import android.content.Intent
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Bundle
-import android.os.PowerManager
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import android.widget.ImageButton
-import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
+import java.io.DataOutputStream
 import java.io.IOException
 import java.net.DatagramPacket
-import java.net.DatagramSocket
-import java.net.InetAddress
 import java.net.Socket
+
 
 class RecorderActivity: AppCompatActivity() {
     private val TAG = "RecorderScreen"
 
+    // Configs for socket server
+    lateinit var streamThread: Thread
+    lateinit var socket: Socket
     private val port = 5001
-    private val sampleRate = 16000 // 44100 for music
+    private val host = "192.168.0.12"
+    private var socketStarted = false
 
+    // Configs for record audio
+    private val sampleRate = 16000 // 44100 for music
     private val channelConfig = AudioFormat.CHANNEL_IN_MONO
     private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
     var minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
-
     var recorder: AudioRecord? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,8 +55,11 @@ class RecorderActivity: AppCompatActivity() {
         // Declare variables
         val vibrationConfig = this.getSystemService(VIBRATOR_SERVICE) as Vibrator
 
-        // Start Recording
-        startRecording()
+        // Start Socket Connection
+        if (!socketStarted) {
+            startSocketConnection()
+            socketStarted = true
+        }
 
         // Declare buttons listeners
         val settingButton = findViewById<ImageButton>(R.id.setting_button)
@@ -91,32 +97,31 @@ class RecorderActivity: AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun startRecording() {
-        val streamThread = Thread {
+    private fun startSocketConnection() {
+        streamThread = Thread {
             try {
-                val socket = DatagramSocket()
-                Log.d(TAG, "Socket Created")
+                // Start TCP socket connection
+                socket = Socket(host, port)
+                Log.d(TAG, "Socket connected")
 
                 val buffer = ByteArray(minBufSize)
 
-                Log.d(TAG, "Buffer created of size $minBufSize")
-                var packet: DatagramPacket
-
-                val destination = InetAddress.getByName("192.168.0.12");
-                Log.d(TAG, "Address retrieved");
-
-                recorder = AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate, channelConfig, audioFormat, minBufSize * 10)
-                Log.d(TAG, "Recorder initialized")
+                recorder = AudioRecord(
+                    MediaRecorder.AudioSource.MIC,
+                    sampleRate,
+                    channelConfig,
+                    audioFormat,
+                    minBufSize * 10
+                )
 
                 recorder!!.startRecording()
-
                 while (true) {
-                    //reading data from MIC into buffer
+                    // Reading data from MIC into buffer
                     minBufSize = recorder!!.read(buffer, 0, buffer.size)
 
-                    //putting buffer in the packet
-                    packet = DatagramPacket(buffer, buffer.size, destination, port)
-                    socket.send(packet)
+                    // Sending data through socket
+                    val dOut = DataOutputStream(socket.getOutputStream())
+                    dOut.write(buffer)
                 }
 
             } catch (e: IllegalStateException) {
@@ -126,5 +131,11 @@ class RecorderActivity: AppCompatActivity() {
             }
         }
         streamThread.start()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        socket.close()
+        streamThread.interrupt()
     }
 }
