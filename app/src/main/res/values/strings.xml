@@ -5,4 +5,9 @@
     <string name="permissions_text">Para identificar os sons ao seu redor, é preciso permitir o uso do microfone</string>
     <string name="settings_icon">settings_icon</string>
     <string name="recording_description">Tentando identificar algum áudio ao seu redor</string>
+
+    <!-- Erros -->
+    <string name="timeout_error_text">Não foi possivel se conectar com o servidor.</string>
+    <string name="error_subtext">Tentando identificar algum áudio ao seu redor</string>
+    <string name="alert_button_text">OK</string>
 </resources>

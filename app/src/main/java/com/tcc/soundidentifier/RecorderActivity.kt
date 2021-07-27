@@ -10,13 +10,15 @@ import android.os.Vibrator
 import android.util.Log
 import android.widget.ImageButton
 import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
-import java.io.DataOutputStream
-import java.io.IOException
-import java.net.DatagramPacket
+import java.io.*
+import java.net.InetSocketAddress
 import java.net.Socket
+import java.net.SocketTimeoutException
+import java.util.*
 
 
 class RecorderActivity: AppCompatActivity() {
@@ -26,6 +28,7 @@ class RecorderActivity: AppCompatActivity() {
     lateinit var streamThread: Thread
     lateinit var socket: Socket
     private val port = 5001
+    private val connectionTimeout = 3000
     private val host = "192.168.0.12"
     private var socketStarted = false
 
@@ -44,13 +47,6 @@ class RecorderActivity: AppCompatActivity() {
         // Hide actionBar
         val actionbar: ActionBar? = supportActionBar
         actionbar!!.hide()
-
-        // Active WakeLock for recorder when screen is blocked
-        //        (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
-        //            newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyWakelockTag").apply {
-        //                acquire()
-        //            }
-        //        }
 
         // Declare variables
         val vibrationConfig = this.getSystemService(VIBRATOR_SERVICE) as Vibrator
@@ -101,8 +97,11 @@ class RecorderActivity: AppCompatActivity() {
         streamThread = Thread {
             try {
                 // Start TCP socket connection
-                socket = Socket(host, port)
+                socket = Socket()
+                socket.connect(InetSocketAddress(host, port), connectionTimeout)
                 Log.d(TAG, "Socket connected")
+
+                socket.soTimeout = connectionTimeout
 
                 val buffer = ByteArray(minBufSize)
 
@@ -124,10 +123,27 @@ class RecorderActivity: AppCompatActivity() {
                     dOut.write(buffer)
                 }
 
+            } catch (e: SocketTimeoutException) {
+                Log.d(TAG, "SocketTimeoutException")
+                e.printStackTrace()
+                this.runOnUiThread { alertMessage() }
+                if (::socket.isInitialized) {
+                    socket.close()
+                }
             } catch (e: IllegalStateException) {
+                Log.d(TAG, "IllegalStateException")
                 e.printStackTrace()
+                this.runOnUiThread { alertMessage() }
+                if (::socket.isInitialized) {
+                    socket.close()
+                }
             } catch (e: IOException) {
+                Log.d(TAG, "IOException")
                 e.printStackTrace()
+                this.runOnUiThread { alertMessage() }
+                if (::socket.isInitialized) {
+                    socket.close()
+                }
             }
         }
         streamThread.start()
@@ -135,7 +151,26 @@ class RecorderActivity: AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        socket.close()
-        streamThread.interrupt()
+        if (::socket.isInitialized) {
+            socket.close()
+        }
+        if (::streamThread.isInitialized) {
+            streamThread.interrupt()
+        }
+    }
+
+    private fun alertMessage() {
+        val text = this.getString(R.string.timeout_error_text)
+        val subtext = this.getString(R.string.error_subtext)
+        val alertButtonText = this.getString(R.string.alert_button_text)
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(text)
+        builder.setMessage(subtext)
+        builder.setPositiveButton(alertButtonText){ _dialog, _which ->
+            this.finishAffinity()
+        }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 }
