@@ -14,23 +14,28 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import com.tcc.soundidentifier.constants.ClassifiedSoundsValues
+import com.tcc.soundidentifier.database.repository.ClassifiedSoundsRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val permissionRequestCode = 0
     private val TAG = "PermissionsScreen"
+    private var permissionsCalled = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContentView(R.layout.activity_main)
+
+        // Init values of classifiedSounds
+        CoroutineScope(Dispatchers.IO).launch { initializeClassifiedSoundsValues() }
 
         // Hide actionBar
         val actionbar: ActionBar? = supportActionBar
         actionbar!!.hide()
-
-        // Declare variables
-        var permissionsCalled = 0
 
         // Check if user has permission permissions
         checkPermissions()
@@ -93,6 +98,17 @@ class MainActivity : AppCompatActivity() {
                 writeExternalStoragePermissionStatus == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Permissões aceitas, redirecionar para tela de gravação de áudio")
             redirectToRecorderActivity()
+        }
+    }
+
+    private fun initializeClassifiedSoundsValues() {
+        Log.d(TAG, "Recebendo dados do DB")
+        val lastRow = ClassifiedSoundsRepository.getClassifiedSoundsLastRow(this)
+        if (lastRow != null) {
+            ClassifiedSoundsValues.dogBark = lastRow.dog_bark
+            ClassifiedSoundsValues.gunShot = lastRow.gun_shot
+            ClassifiedSoundsValues.carHorn = lastRow.car_horn
+            ClassifiedSoundsValues.siren = lastRow.siren
         }
     }
 }

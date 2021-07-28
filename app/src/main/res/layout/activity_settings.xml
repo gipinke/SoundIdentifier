@@ -28,8 +28,8 @@
         android:layout_marginTop="24dp"
         android:text="@string/dog_bark"
         android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/dog_bark_switch"
-        app:layout_constraintHorizontal_bias="0.182"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.134"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settings_title" />
 
@@ -40,8 +40,8 @@
         android:layout_marginTop="24dp"
         android:text="@string/car_horn"
         android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/car_horn_switch"
-        app:layout_constraintHorizontal_bias="0.164"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.123"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dog_bark_text_view" />
 
@@ -52,11 +52,11 @@
         android:layout_marginTop="24dp"
         android:text="@string/gun_shot"
         android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/gun_shot_switch"
-        app:layout_constraintHorizontal_bias="0.13"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.103"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/car_horn_text_view" />
-    
+
     <TextView
         android:id="@+id/siren_text_view"
         android:layout_width="wrap_content"
@@ -64,8 +64,8 @@
         android:layout_marginTop="24dp"
         android:text="@string/siren"
         android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/siren_switch"
-        app:layout_constraintHorizontal_bias="0.126"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gun_shot_text_view" />
 
@@ -76,6 +76,7 @@
         android:layout_marginTop="80dp"
         android:layout_marginEnd="28dp"
         android:theme="@style/SwitchStyle"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
@@ -87,6 +88,7 @@
         android:layout_marginTop="18dp"
         android:layout_marginEnd="28dp"
         android:theme="@style/SwitchStyle"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dog_bark_switch"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
@@ -98,6 +100,7 @@
         android:layout_marginTop="18dp"
         android:layout_marginEnd="28dp"
         android:theme="@style/SwitchStyle"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/car_horn_switch"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
@@ -109,6 +112,7 @@
         android:layout_marginTop="18dp"
         android:layout_marginEnd="28dp"
         android:theme="@style/SwitchStyle"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gun_shot_switch"
         tools:ignore="UseSwitchCompatOrMaterialXml" />

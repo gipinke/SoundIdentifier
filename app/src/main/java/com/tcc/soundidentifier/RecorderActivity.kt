@@ -169,7 +169,7 @@ class RecorderActivity: AppCompatActivity() {
         builder.setMessage(subtext)
         builder.setPositiveButton(alertButtonText){ _dialog, _which ->
             Log.d(TAG, "Fechando app")
-            this.finishAffinity()
+//            this.finishAffinity()
         }
         builder.setCancelable(false)
         val dialog: AlertDialog = builder.create()
