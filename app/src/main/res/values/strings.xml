@@ -10,4 +10,11 @@
     <string name="timeout_error_text">Não foi possivel se conectar com o servidor.</string>
     <string name="error_subtext">Tentando identificar algum áudio ao seu redor</string>
     <string name="alert_button_text">OK</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Sons Reconhecidos:</string>
+    <string name="dog_bark">Latido de Cachorro</string>
+    <string name="gun_shot">Tiroteio</string>
+    <string name="siren">Sirene</string>
+    <string name="car_horn">Buzina de Carro</string>
 </resources>
