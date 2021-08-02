@@ -8,17 +8,31 @@ import android.media.RingtoneManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.tcc.soundidentifier.MainActivity
 import com.tcc.soundidentifier.R
+import com.tcc.soundidentifier.constants.Settings
+import com.tcc.soundidentifier.constants.UserData
 
 class FirebaseMessageService : FirebaseMessagingService() {
-    val TAG = "FirebaseMessagingService"
+    private val TAG = "FirebaseMessagingService"
 
     @SuppressLint("LongLogTag")
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         if (remoteMessage.notification != null) {
+            val audioClassified = remoteMessage.notification?.tag?.toInt()
+            Log.d(TAG, "Tag áudio classificado: $audioClassified")
             showNotification(remoteMessage.notification?.title, remoteMessage.notification?.body)
+
+//            if (audioClassified == Settings.carHorn && UserData.carHorn)
+//                showNotification(remoteMessage.notification?.title, remoteMessage.notification?.body)
+//            else if (audioClassified == Settings.dogBark && UserData.dogBark)
+//                showNotification(remoteMessage.notification?.title, remoteMessage.notification?.body)
+//            else if (audioClassified == Settings.gunShot && UserData.gunShot)
+//                showNotification(remoteMessage.notification?.title, remoteMessage.notification?.body)
+//            else if (audioClassified == Settings.siren && UserData.siren)
+//                showNotification(remoteMessage.notification?.title, remoteMessage.notification?.body)
         }
     }
 

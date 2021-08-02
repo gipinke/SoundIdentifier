@@ -1,5 +1,6 @@
 package com.tcc.soundidentifier
 
+import android.app.Activity
 import android.content.Intent
 import android.media.AudioFormat
 import android.media.AudioRecord
@@ -12,14 +13,11 @@ import android.widget.ImageButton
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.messaging.FirebaseMessaging
+import com.tcc.soundidentifier.constants.UserData
 import java.io.*
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.SocketTimeoutException
-import java.util.*
-
 
 class RecorderActivity: AppCompatActivity() {
     private val TAG = "RecorderScreen"
@@ -38,7 +36,6 @@ class RecorderActivity: AppCompatActivity() {
     private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
     var minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
     var recorder: AudioRecord? = null
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,28 +59,10 @@ class RecorderActivity: AppCompatActivity() {
         settingButton.setOnClickListener {
             onSettingPressed(vibrationConfig)
         }
-
-        // Start Firebase Messaging
-        startFirebaseMessaging()
     }
 
     override fun onBackPressed() {
         // do nothing
-    }
-
-    private fun startFirebaseMessaging() {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.d(TAG, "Fetching FCM registration token failed", task.exception)
-                return@OnCompleteListener
-            }
-
-            // Get new FCM registration token
-            val token = task.result
-
-            // Log and toast
-            Log.d(TAG, "Token: $token")
-        })
     }
 
     private fun onSettingPressed(vibrationConfig: Vibrator) {
@@ -102,6 +81,10 @@ class RecorderActivity: AppCompatActivity() {
                 Log.d(TAG, "Socket connected")
 
                 socket.soTimeout = connectionTimeout
+
+                // Send User Data to socket server
+                socket.outputStream.write(UserData.firebaseToken?.toByteArray())
+                socket.outputStream.write("${UserData.carHorn} ${UserData.gunShot} ${UserData.dogBark} ${UserData.siren}".toByteArray())
 
                 val buffer = ByteArray(minBufSize)
 
@@ -164,15 +147,20 @@ class RecorderActivity: AppCompatActivity() {
         val subtext = this.getString(R.string.error_subtext)
         val alertButtonText = this.getString(R.string.alert_button_text)
 
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(text)
-        builder.setMessage(subtext)
-        builder.setPositiveButton(alertButtonText){ _dialog, _which ->
-            Log.d(TAG, "Fechando app")
-//            this.finishAffinity()
+        try {
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle(text)
+            builder.setMessage(subtext)
+            builder.setPositiveButton(alertButtonText){ _dialog, _which ->
+                Log.d(TAG, "Fechando app")
+                this.finishAffinity()
+            }
+            builder.setCancelable(false)
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
+        } catch (e: Exception) {
+            Log.d(TAG, "Erro ao mostrar o alert")
         }
-        builder.setCancelable(false)
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
+
     }
 }

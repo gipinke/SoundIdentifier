@@ -14,7 +14,9 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
-import com.tcc.soundidentifier.constants.ClassifiedSoundsValues
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
+import com.tcc.soundidentifier.constants.UserData
 import com.tcc.soundidentifier.database.repository.ClassifiedSoundsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +34,9 @@ class MainActivity : AppCompatActivity() {
 
         // Init values of classifiedSounds
         CoroutineScope(Dispatchers.IO).launch { initializeClassifiedSoundsValues() }
+
+        // Start Firebase Messaging
+        startFirebaseMessaging()
 
         // Hide actionBar
         val actionbar: ActionBar? = supportActionBar
@@ -105,10 +110,25 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG, "Recebendo dados do DB")
         val lastRow = ClassifiedSoundsRepository.getClassifiedSoundsLastRow(this)
         if (lastRow != null) {
-            ClassifiedSoundsValues.dogBark = lastRow.dog_bark
-            ClassifiedSoundsValues.gunShot = lastRow.gun_shot
-            ClassifiedSoundsValues.carHorn = lastRow.car_horn
-            ClassifiedSoundsValues.siren = lastRow.siren
+            UserData.dogBark = lastRow.dog_bark
+            UserData.gunShot = lastRow.gun_shot
+            UserData.carHorn = lastRow.car_horn
+            UserData.siren = lastRow.siren
         }
+    }
+
+    private fun startFirebaseMessaging() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.d(TAG, "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+
+            // Get new FCM registration token
+            UserData.firebaseToken = task.result
+
+            // Log and toast
+            Log.d(TAG, "Token: ${UserData.firebaseToken}")
+        })
     }
 }

@@ -1,6 +1,7 @@
 package com.tcc.soundidentifier.constants
 
-object ClassifiedSoundsValues {
+object UserData {
+    var firebaseToken: String? = ""
     var dogBark = true
     var carHorn = true
     var gunShot = true
