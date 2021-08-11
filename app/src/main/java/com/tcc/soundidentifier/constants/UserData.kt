@@ -6,4 +6,8 @@ object UserData {
     var carHorn = true
     var gunShot = true
     var siren = true
+    var dogBarkVibration = 0
+    var carHornVibration = 0
+    var gunShotVibration = 0
+    var sirenVibration = 0
 }

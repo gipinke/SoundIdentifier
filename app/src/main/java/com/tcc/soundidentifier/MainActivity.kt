@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.tcc.soundidentifier.constants.UserData
 import com.tcc.soundidentifier.database.repository.ClassifiedSoundsRepository
+import com.tcc.soundidentifier.database.repository.SoundVibrationTypeRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,8 +33,9 @@ class MainActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContentView(R.layout.activity_main)
 
-        // Init values of classifiedSounds
+        // Init values of database
         CoroutineScope(Dispatchers.IO).launch { initializeClassifiedSoundsValues() }
+        CoroutineScope(Dispatchers.IO).launch { initializeSoundVibrationTypeValues() }
 
         // Start Firebase Messaging
         startFirebaseMessaging()
@@ -114,6 +116,17 @@ class MainActivity : AppCompatActivity() {
             UserData.gunShot = lastRow.gun_shot
             UserData.carHorn = lastRow.car_horn
             UserData.siren = lastRow.siren
+        }
+    }
+
+    private fun initializeSoundVibrationTypeValues() {
+        Log.d(TAG, "Recebendo dados do DB")
+        val lastRow = SoundVibrationTypeRepository.getSoundVibrationTypeLastRow(this)
+        if (lastRow != null) {
+            UserData.dogBarkVibration = lastRow.dog_bark_vibration
+            UserData.gunShotVibration = lastRow.gun_shot_vibration
+            UserData.carHornVibration = lastRow.car_horn_vibration
+            UserData.sirenVibration = lastRow.siren_vibration
         }
     }
 

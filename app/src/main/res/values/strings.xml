@@ -13,8 +13,18 @@
 
     <!-- Settings Screen -->
     <string name="settings_title">Sons Reconhecidos:</string>
+    <string name="settings_title2">Tipos de vibração:</string>
     <string name="dog_bark">Latido de Cachorro</string>
     <string name="gun_shot">Tiroteio</string>
     <string name="siren">Sirene</string>
     <string name="car_horn">Buzina de Carro</string>
+    <string-array name="vibration_array">
+        <item>Padrão</item>
+        <item>Curta</item>
+        <item>Longa</item>
+        <item>Dupla</item>
+        <item>Tripla</item>
+    </string-array>
+
+
 </resources>

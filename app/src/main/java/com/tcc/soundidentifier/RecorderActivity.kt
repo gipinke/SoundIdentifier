@@ -1,13 +1,10 @@
 package com.tcc.soundidentifier
 
-import android.app.Activity
 import android.content.Intent
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.util.Log
 import android.widget.ImageButton
 import androidx.appcompat.app.ActionBar
@@ -45,9 +42,6 @@ class RecorderActivity: AppCompatActivity() {
         val actionbar: ActionBar? = supportActionBar
         actionbar!!.hide()
 
-        // Declare variables
-        val vibrationConfig = this.getSystemService(VIBRATOR_SERVICE) as Vibrator
-
         // Start Socket Connection
         if (!socketStarted) {
             startSocketConnection()
@@ -57,7 +51,7 @@ class RecorderActivity: AppCompatActivity() {
         // Declare buttons listeners
         val settingButton = findViewById<ImageButton>(R.id.setting_button)
         settingButton.setOnClickListener {
-            onSettingPressed(vibrationConfig)
+            onSettingPressed()
         }
     }
 
@@ -65,9 +59,9 @@ class RecorderActivity: AppCompatActivity() {
         // do nothing
     }
 
-    private fun onSettingPressed(vibrationConfig: Vibrator) {
+    private fun onSettingPressed() {
         Log.d(TAG, "Redirecionar para tela de configurações")
-        vibrationConfig.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
+        stopRecording()
         val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
     }
@@ -134,6 +128,10 @@ class RecorderActivity: AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        stopRecording()
+    }
+
+    private fun stopRecording() {
         if (::socket.isInitialized) {
             socket.close()
         }

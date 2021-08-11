@@ -7,7 +7,7 @@ import androidx.room.Query
 import com.tcc.soundidentifier.database.table.ClassifiedSoundsTableModel
 
 @Dao
-interface ClassificationSoundsDao {
+interface ClassifiedSoundsDAO {
     @Query("SELECT * FROM classifiedSounds ORDER BY id DESC LIMIT 1")
     fun getLast(): ClassifiedSoundsTableModel
 

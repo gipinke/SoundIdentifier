@@ -8,6 +8,8 @@ import android.media.RingtoneManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.tcc.soundidentifier.MainActivity
@@ -15,43 +17,37 @@ import com.tcc.soundidentifier.R
 import com.tcc.soundidentifier.constants.Settings
 import com.tcc.soundidentifier.constants.UserData
 
+@SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class FirebaseMessageService : FirebaseMessagingService() {
     private val TAG = "FirebaseMessagingService"
 
-    @SuppressLint("LongLogTag")
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         if (remoteMessage.notification != null) {
             val audioClassified = remoteMessage.notification?.tag?.toInt()
             Log.d(TAG, "Tag áudio classificado: $audioClassified")
-            showNotification(remoteMessage.notification?.title, remoteMessage.notification?.body)
 
-//            if (audioClassified == Settings.carHorn && UserData.carHorn)
-//                showNotification(remoteMessage.notification?.title, remoteMessage.notification?.body)
-//            else if (audioClassified == Settings.dogBark && UserData.dogBark)
-//                showNotification(remoteMessage.notification?.title, remoteMessage.notification?.body)
-//            else if (audioClassified == Settings.gunShot && UserData.gunShot)
-//                showNotification(remoteMessage.notification?.title, remoteMessage.notification?.body)
-//            else if (audioClassified == Settings.siren && UserData.siren)
-//                showNotification(remoteMessage.notification?.title, remoteMessage.notification?.body)
+            val vibrationPatternInt = when(audioClassified) {
+                Settings.dogBark -> UserData.dogBarkVibration
+                Settings.gunShot -> UserData.gunShotVibration
+                Settings.carHorn -> UserData.carHornVibration
+                Settings.siren -> UserData.sirenVibration
+                else -> -1
+            }
+            if (vibrationPatternInt >= 0) vibrate(vibrationPatternInt)
         }
     }
 
-    private fun showNotification(title: String?, body: String?) {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent,
-            PendingIntent.FLAG_ONE_SHOT)
+    private fun vibrate(vibrationPatternInt: Int) {
+        val vibrationConfig = this.getSystemService(VIBRATOR_SERVICE) as Vibrator
+        val vibrationPattern = when(vibrationPatternInt) {
+            Settings.defaultVibration -> Settings.defaultVibrationArray
+            Settings.shortVibration -> Settings.shortVibrationArray
+            Settings.longVibration -> Settings.longVibrationArray
+            Settings.doubleVibration -> Settings.doubleVibrationArray
+            Settings.tripleVibration -> Settings.tripleVibrationArray
+            else -> Settings.defaultVibrationArray
+        }
 
-        val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val notificationBuilder = NotificationCompat.Builder(this)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(title)
-            .setContentText(body)
-            .setAutoCancel(true)
-            .setSound(soundUri)
-            .setContentIntent(pendingIntent)
-
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(0, notificationBuilder.build())
+        vibrationConfig.vibrate(vibrationPattern, -1)
     }
 }

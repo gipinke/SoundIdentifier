@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.tcc.soundidentifier.database.dao.ClassificationSoundsDao
+import com.tcc.soundidentifier.database.dao.ClassifiedSoundsDAO
+import com.tcc.soundidentifier.database.dao.SoundVibrationTypeDAO
 import com.tcc.soundidentifier.database.table.ClassifiedSoundsTableModel
+import com.tcc.soundidentifier.database.table.SoundVibrationTypeTableModel
 
-@Database(entities = [ClassifiedSoundsTableModel::class], version = 1, exportSchema = true)
+@Database(entities = [ClassifiedSoundsTableModel::class, SoundVibrationTypeTableModel::class], version = 1, exportSchema = true)
 abstract class ClassifiedSoundsDatabase : RoomDatabase() {
-    abstract fun classifiedSoundsDao(): ClassificationSoundsDao
+    abstract fun classifiedSoundsDao(): ClassifiedSoundsDAO
+    abstract fun soundVibrationTypeDao(): SoundVibrationTypeDAO
 
     companion object {
         // Singleton prevents multiple instances of database opening at the same time.
