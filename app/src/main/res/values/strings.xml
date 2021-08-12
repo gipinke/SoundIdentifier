@@ -7,8 +7,8 @@
     <string name="recording_description">Tentando identificar algum áudio ao seu redor</string>
 
     <!-- Erros -->
-    <string name="timeout_error_text">Não foi possivel se conectar com o servidor.</string>
-    <string name="error_subtext">Tentando identificar algum áudio ao seu redor</string>
+    <string name="timeout_error_text">Erro de conexão com o servidor.</string>
+    <string name="error_subtext">Reinicie o aplicativo e tente novamente!</string>
     <string name="alert_button_text">OK</string>
 
     <!-- Settings Screen -->
@@ -26,5 +26,9 @@
         <item>Tripla</item>
     </string-array>
 
+    <!-- Notification Configuration -->
+    <string name="notification_channel_id">SoundIdentifier_Notifications</string>
+    <string name="notification_channel_name">SoundIdentifier</string>
+    <string name="notification_channel_description">Canal de notificação</string>
 
 </resources>

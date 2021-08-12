@@ -9,11 +9,8 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.tcc.soundidentifier.constants.Settings
 import com.tcc.soundidentifier.constants.UserData
-import com.tcc.soundidentifier.database.dao.SoundVibrationTypeDAO
-import com.tcc.soundidentifier.database.repository.ClassifiedSoundsRepository
-import com.tcc.soundidentifier.database.repository.SoundVibrationTypeRepository
-import com.tcc.soundidentifier.database.table.ClassifiedSoundsTableModel
-import com.tcc.soundidentifier.database.table.SoundVibrationTypeTableModel
+import com.tcc.soundidentifier.database.repository.UserSettingsRepository
+import com.tcc.soundidentifier.database.table.UserSettingsTableModel
 
 
 class SettingsActivity: AppCompatActivity(), AdapterView.OnItemSelectedListener {
@@ -48,7 +45,7 @@ class SettingsActivity: AppCompatActivity(), AdapterView.OnItemSelectedListener 
         setContentView(R.layout.activity_settings)
 
         // Declare actionBar
-        var actionBar = supportActionBar
+        val actionBar = supportActionBar
 
         // Showing the back button in action bar
         actionBar?.setDisplayHomeAsUpEnabled(true)
@@ -155,7 +152,7 @@ class SettingsActivity: AppCompatActivity(), AdapterView.OnItemSelectedListener 
             }
         }
         vibrate(position)
-        insertSoundsVibrationTypeInDatabase()
+        insertEnableSoundsInDatabase()
     }
 
     override fun onNothingSelected(arg0: AdapterView<*>) {
@@ -163,24 +160,17 @@ class SettingsActivity: AppCompatActivity(), AdapterView.OnItemSelectedListener 
 
     private fun insertEnableSoundsInDatabase() {
         Log.d(TAG, "Inserindo no BD")
-        val classifiedSound = ClassifiedSoundsTableModel(
+        val classifiedSound = UserSettingsTableModel(
             UserData.dogBark,
-            UserData.gunShot,
-            UserData.carHorn,
-            UserData.siren
-        )
-        ClassifiedSoundsRepository.insertClassifiedSoundsLog(this, classifiedSound)
-    }
-
-    private fun insertSoundsVibrationTypeInDatabase() {
-        Log.d(TAG, "Inserindo no BD")
-        val soundVibrationType = SoundVibrationTypeTableModel(
             UserData.dogBarkVibration,
+            UserData.gunShot,
             UserData.gunShotVibration,
+            UserData.carHorn,
             UserData.carHornVibration,
+            UserData.siren,
             UserData.sirenVibration
         )
-        SoundVibrationTypeRepository.insertSoundVibrationTypeLog(this, soundVibrationType)
+        UserSettingsRepository.insertClassifiedSoundsLog(this, classifiedSound)
     }
 
     private fun initSwitches() {

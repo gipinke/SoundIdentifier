@@ -1,6 +1,8 @@
 package com.tcc.soundidentifier
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -17,8 +19,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.tcc.soundidentifier.constants.UserData
-import com.tcc.soundidentifier.database.repository.ClassifiedSoundsRepository
-import com.tcc.soundidentifier.database.repository.SoundVibrationTypeRepository
+import com.tcc.soundidentifier.database.repository.UserSettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,7 +36,6 @@ class MainActivity : AppCompatActivity() {
 
         // Init values of database
         CoroutineScope(Dispatchers.IO).launch { initializeClassifiedSoundsValues() }
-        CoroutineScope(Dispatchers.IO).launch { initializeSoundVibrationTypeValues() }
 
         // Start Firebase Messaging
         startFirebaseMessaging()
@@ -58,6 +58,12 @@ class MainActivity : AppCompatActivity() {
                 permissionsCalled += 1
             } else redirectToAppPermissionsScreen()
         }
+
+        // Create notification channel
+        createChannel(
+            getString(R.string.notification_channel_id),
+            getString(R.string.notification_channel_name)
+        )
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -73,10 +79,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestPermissions() {
-        val permissions = arrayOf(
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
+        val permissions = arrayOf(Manifest.permission.RECORD_AUDIO)
 
         requestPermissions(permissions, permissionRequestCode)
     }
@@ -110,22 +113,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun initializeClassifiedSoundsValues() {
         Log.d(TAG, "Recebendo dados do DB")
-        val lastRow = ClassifiedSoundsRepository.getClassifiedSoundsLastRow(this)
+        val lastRow = UserSettingsRepository.getClassifiedSoundsLastRow(this)
         if (lastRow != null) {
             UserData.dogBark = lastRow.dog_bark
-            UserData.gunShot = lastRow.gun_shot
-            UserData.carHorn = lastRow.car_horn
-            UserData.siren = lastRow.siren
-        }
-    }
-
-    private fun initializeSoundVibrationTypeValues() {
-        Log.d(TAG, "Recebendo dados do DB")
-        val lastRow = SoundVibrationTypeRepository.getSoundVibrationTypeLastRow(this)
-        if (lastRow != null) {
             UserData.dogBarkVibration = lastRow.dog_bark_vibration
+            UserData.gunShot = lastRow.gun_shot
             UserData.gunShotVibration = lastRow.gun_shot_vibration
+            UserData.carHorn = lastRow.car_horn
             UserData.carHornVibration = lastRow.car_horn_vibration
+            UserData.siren = lastRow.siren
             UserData.sirenVibration = lastRow.siren_vibration
         }
     }
@@ -143,5 +139,17 @@ class MainActivity : AppCompatActivity() {
             // Log and toast
             Log.d(TAG, "Token: ${UserData.firebaseToken}")
         })
+    }
+
+    private fun createChannel(channelId: String, channelName: String) {
+        val notificationChannel = NotificationChannel(
+            channelId,
+            channelName,
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply { setShowBadge(false) }
+        notificationChannel.description = getString(R.string.notification_channel_description)
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(notificationChannel)
     }
 }

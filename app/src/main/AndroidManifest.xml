@@ -3,6 +3,7 @@
     package="com.tcc.soundidentifier">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -46,5 +47,6 @@
             </intent-filter>
         </service>
 
+        <service android:name=".service.RecordingService" />
     </application>
 </manifest>
