@@ -1,7 +1,9 @@
 package com.tcc.soundidentifier
 
+import android.app.ActivityManager
 import android.app.NotificationManager
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
@@ -12,10 +14,10 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.tcc.soundidentifier.service.RecordingService
+import kotlin.system.exitProcess
 
 class RecorderActivity: AppCompatActivity() {
     private val TAG = "RecorderScreen"
-    private var isServiceRunning = false
     private var screenChange = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,8 +29,7 @@ class RecorderActivity: AppCompatActivity() {
         actionbar!!.hide()
 
         // Start Service
-        if (!isServiceRunning) {
-            isServiceRunning = true
+        if (!isMyServiceRunning(RecordingService::class.java)) {
             startService()
         }
 
@@ -68,6 +69,16 @@ class RecorderActivity: AppCompatActivity() {
         )
     }
 
+    private fun isMyServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                return true
+            }
+        }
+        return false
+    }
+
     private fun alertMessage() {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val text = this.getString(R.string.timeout_error_text)
@@ -82,6 +93,7 @@ class RecorderActivity: AppCompatActivity() {
                 Log.d(TAG, "Fechando app")
                 this.finishAffinity()
                 notificationManager.cancelAll()
+                exitProcess(0)
             }
             builder.setCancelable(false)
             val dialog: AlertDialog = builder.create()

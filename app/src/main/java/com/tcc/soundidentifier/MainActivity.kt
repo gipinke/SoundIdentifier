@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity() {
             // Get new FCM registration token
             UserData.firebaseToken = task.result
 
-            // Log and toast
+            // Log
             Log.d(TAG, "Token: ${UserData.firebaseToken}")
         })
     }

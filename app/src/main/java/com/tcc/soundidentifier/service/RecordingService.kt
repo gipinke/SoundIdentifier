@@ -26,7 +26,7 @@ class RecordingService : Service() {
     lateinit var socket: Socket
     private val port = 5001
     private val connectionTimeout = 3000
-    private val host = "192.168.0.12"
+    private val host = "192.168.15.12"
 
     // Configs for record audio
     private val sampleRate = 16000 // 44100 for music
@@ -58,7 +58,7 @@ class RecordingService : Service() {
                 val buffer = ByteArray(minBufSize)
 
                 recorder = AudioRecord(
-                    MediaRecorder.AudioSource.MIC,
+                    MediaRecorder.AudioSource.VOICE_RECOGNITION,
                     sampleRate,
                     channelConfig,
                     audioFormat,
