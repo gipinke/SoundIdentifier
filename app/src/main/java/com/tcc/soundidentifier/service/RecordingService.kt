@@ -112,7 +112,7 @@ class RecordingService : Service() {
         val subtext = applicationContext.getString(com.tcc.soundidentifier.R.string.error_subtext)
 
         val intent = Intent(this, RecorderActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
         val builder = NotificationCompat.Builder(
             applicationContext,
